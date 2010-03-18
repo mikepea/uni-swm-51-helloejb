@@ -9,5 +9,5 @@ import java.rmi.*;
 public interface HelloHome extends EJBHome
 {
     public Hello create()
-        throws CreateException, RemoteException
+        throws CreateException, RemoteException;
 }

@@ -37,17 +37,17 @@ public class HelloBean implements SessionBean
 
     public void setSessionContext(SessionContext ctx)
     {
-        this.ctx = ctx
+        this.ctx = ctx;
     }
 
     public void unsetSessionContext()
     {
-        this.ctx = null
+        this.ctx = null;
     }
 
     public String sayHello(String myName) throws EJBException
     {
-        return ("Hello " + myName)
+        return ("Hello " + myName);
     }
 
 }
