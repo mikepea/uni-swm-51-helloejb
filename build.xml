@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<!--
+Build file for helloejb application
+-->
+
+<project name="helloejb" default="ear" basedir=".">
+
+   <!-- ================================================================== -->
+   <!-- Initialization of all property settings                            -->
+   <!-- ================================================================== -->
+
+   <target name="init">
+      <property name="app.name"       value="helloejb"                		/>
+      <property name="ear.name"       value="${app.name}"             		/>
+      <property name="ejb.name"       value="${ear.name}-ejb" 			/>
+      <property name="web.name"       value="${ear.name}-web"                   />
+      <property name="bld.dir"        value="./build"                           />
+      <property name="src.dir"        value="./src"                   	        />
+      <property name="src.ejb.dir"    value="./src/ejb/${ejb.name}" 		/>
+      <property name="src.web.dir"    value="./src/web/${web.name}"             />
+      <property name="etc.dir"        value="./etc"                        	/>
+      <property name="lib.dir"        value="./lib"                  	        />
+
+      <property name="bld.ear.dir"    value="${bld.dir}/${ear.name}"            />
+      <property name="bld.ejb.dir"    value="${bld.ear.dir}/${ejb.name}" 	/>
+      <property name="bld.web.dir"    value="${bld.ear.dir}/${web.name}"        />
+
+      <property name="oc4j.home"      value="/home/gs3/OC4J"   			/>
+      <property name="j2ee.home"      value="${oc4j.home}/j2ee/home"		/>
+
+      <property name="build.compiler" value="classic"          			/>
+
+      <property name="base.lib"       value="${j2ee.home}/lib" 			/>
+      <property name="oc4j.jar"       value="${j2ee.home}/oc4j.jar" 		/>
+      <property name="web.classpath"  value="${base.lib}\servlet.jar:${oc4j.jar}:${base.lib}\ejb.jar" />
+      <property name="class.files"    value="**/*.class" 			/>
+      <property name="bak.files"      value="**/*~" 				/>
+
+  </target>
+
+   <target name="clean" depends="init">
+      <delete dir="${bld.dir}" />
+      <delete dir="${lib.dir}" />
+      <delete>
+         <fileset dir="." includes="${bak.files}" defaultexcludes="no"/>
+      </delete>
+   </target>
+
+   <target name="setup" depends="init">
+      <mkdir dir="${lib.dir}" />
+      <mkdir dir="${bld.dir}" />
+      <mkdir dir="${bld.ear.dir}" />
+      <mkdir dir="${bld.ear.dir}/META-INF" />
+      <mkdir dir="${bld.ejb.dir}/META-INF" />
+      <mkdir dir="${bld.web.dir}/WEB-INF/classes" />
+   </target>
+
+   <target name="ejb-classes" depends="setup">
+      <javac srcdir="${src.ejb.dir}"
+             destdir="${bld.ejb.dir}"
+             debug="on">
+         <classpath>
+            <pathelement path="${web.classpath}" />
+            <pathelement location="${bld.ejb.dir}" />
+            <pathelement location="${lib.dir}/${ejb.name}.jar" />
+         </classpath>
+      </javac>
+   </target>
+
+   <target name="ejb-descriptor" depends="setup">
+      <copy todir="${bld.ejb.dir}/META-INF">
+         <fileset dir="${etc.dir}" includes="ejb-jar.xml"/>
+      </copy>
+   </target>
+
+   <target name="ejb-jar" depends="ejb-classes,ejb-descriptor">
+      <jar jarfile="${lib.dir}/${ejb.name}.jar">
+         <fileset dir="${bld.ejb.dir}" includes="**" />
+      </jar>
+   </target>
+
+   <target name="web-classes" depends="setup">
+      <javac srcdir="${src.web.dir}"
+             destdir="${bld.web.dir}/WEB-INF/classes"
+             debug="on">
+         <classpath>
+            <pathelement path="${web.classpath}" />
+            <pathelement location="${bld.web.dir}" />
+            <pathelement location="${lib.dir}/${ejb.name}.jar" />
+         </classpath>
+      </javac>
+   </target>
+
+   <target name="web-jsp" depends="setup">
+      <copy todir="${bld.web.dir}">
+         <fileset dir="${src.web.dir}" includes="index.html" />
+      </copy>
+   </target>
+
+   <target name="web-descriptor" depends="setup">
+      <copy todir="${bld.web.dir}/WEB-INF">
+         <fileset dir="${etc.dir}" includes="web.xml"/>
+      </copy>
+   </target>
+
+   <target name="web-war" depends="web-classes,web-jsp,web-descriptor">
+      <jar jarfile="${lib.dir}/${web.name}.war">
+         <fileset dir="${bld.web.dir}" includes="**" />
+      </jar>
+   </target>
+
+   <target name="j2ee-descriptor" depends="setup">
+      <copy todir="${bld.ear.dir}/META-INF">
+         <fileset dir="${etc.dir}" includes="application.xml"/>
+      </copy>
+   </target>
+
+   <target name="j2ee-ear" depends="ejb-jar,web-war,j2ee-descriptor">
+      <jar jarfile="${lib.dir}/${ear.name}.ear">
+         <fileset dir="${lib.dir}" includes="${ejb.name}.jar" />
+         <fileset dir="${lib.dir}" includes="${web.name}.war" />
+         <fileset dir="${bld.ear.dir}" includes="META-INF/*.xml" />
+      </jar>
+   </target>
+
+   <target name="ear" depends="j2ee-ear" />
+</project>

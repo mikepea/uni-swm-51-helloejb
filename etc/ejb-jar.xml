@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 1.1//EN" "http://java.sun.com/j2ee/dtds/ejb-jar_1_1.dtd">
+
+<ejb-jar>
+   <display-name>hello</display-name>
+
+   <enterprise-beans>
+      <session>
+         <display-name>HelloBean</display-name>
+         <ejb-name>HelloBean</ejb-name>
+         <home>hello.HelloHome</home>
+         <remote>hello.Hello</remote>
+         <local-home>hello.HelloLocalHome</local-home>
+         <local>hello.HelloLocal</local>
+         <ejb-class>hello.HelloBean</ejb-class>
+         <session-type>Stateless</session-type>
+         <transaction-type>Container</transaction-type>
+      </session>
+   </enterprise-beans>
+
+   <assembly-descriptor>
+      <container-transaction>
+         <method>
+            <ejb-name>HelloBean</ejb-name>
+            <method-name>*</method-name>
+         </method>
+         <trans-attribute>Supports</trans-attribute>
+      </container-transaction>
+      <security-role>
+         <role-name>users</role-name>
+      </security-role>
+   </assembly-descriptor>
+</ejb-jar>
+
