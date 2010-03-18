@@ -1,6 +1,6 @@
 // Hello.java
 
-package Hello;
+package hello;
 
 import javax.ejb.*;
 import java.rmi.*;
